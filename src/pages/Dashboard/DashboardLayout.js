@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import { ThemeContext } from "../../components/themeProvider";
 import MenuIcon from "@mui/icons-material/Menu";
-import SideMenu from "../Components/Dashboard/SideMenu";
+import SideMenu from "../../components/dashboard/SideMenu";
 import Header from "../../globalComponents/Header";
 
 const DashboardLayout = ({ children }) => {
@@ -35,59 +35,9 @@ const DashboardLayout = ({ children }) => {
         background: theme.palette.background.default,
       }}
     >
-      {/* Mobile AppBar */}
-      {isMobile && (
-        <AppBar
-          position="fixed"
-          elevation={0}
-          sx={{
-            backgroundColor: theme.palette.background.paper,
-            color: theme.palette.text.primary,
-            borderBottom: `1px solid ${theme.palette.divider}`,
-            zIndex: theme.zIndex.drawer + 1,
-          }}
-        >
-          <Toolbar
-            sx={{ display: "flex", justifyContent: "space-between", px: 1 }}
-          >
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <IconButton
-                color="inherit"
-                aria-label="open drawer"
-                edge="start"
-                onClick={handleDrawerToggle}
-                sx={{ mr: 1 }}
-              >
-                <MenuIcon />
-              </IconButton>
-              <Typography variant="h6" fontWeight="bold" color="primary">
-                FinCollab
-              </Typography>
-            </Box>
-            <Header />
-          </Toolbar>
-        </AppBar>
-      )}
-      {/* Mobile Drawer */}
-      {isMobile && (
-        <Drawer
-          variant="temporary"
-          open={mobileOpen}
-          onClose={handleDrawerToggle}
-          ModalProps={{ keepMounted: true }}
-          sx={{
-            "& .MuiDrawer-paper": {
-              width: 280,
-              backgroundColor: theme.palette.background.paper,
-              backgroundImage: "none",
-            },
-          }}
-        >
-          <SideMenu />
-        </Drawer>
-      )}
       {/* Desktop Sidebar */}
       {!isMobile && <SideMenu />}
+
       {/* Main Content */}
       <Stack
         component="main"
@@ -113,7 +63,53 @@ const DashboardLayout = ({ children }) => {
             <Header />
           </Box>
         )}
-
+        {isMobile && (
+          <AppBar
+            position="fixed"
+            elevation={0}
+            sx={{
+              backgroundColor: theme.palette.background.paper,
+              color: theme.palette.text.primary,
+              borderBottom: `1px solid ${theme.palette.divider}`,
+              zIndex: theme.zIndex.drawer + 1,
+            }}
+          >
+            <Drawer
+              variant="temporary"
+              open={mobileOpen}
+              onClose={handleDrawerToggle}
+              ModalProps={{ keepMounted: true }}
+              sx={{
+                "& .MuiDrawer-paper": {
+                  width: 280,
+                  backgroundColor: theme.palette.background.paper,
+                  backgroundImage: "none",
+                },
+              }}
+            >
+              <SideMenu />
+            </Drawer>
+            <Toolbar
+              sx={{ display: "flex", justifyContent: "space-between", px: 1 }}
+            >
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                <IconButton
+                  color="inherit"
+                  aria-label="open drawer"
+                  edge="start"
+                  onClick={handleDrawerToggle}
+                  sx={{ mr: 1 }}
+                >
+                  <MenuIcon />
+                </IconButton>
+                <Typography variant="h6" fontWeight="bold" color="primary">
+                  FinCollab
+                </Typography>
+              </Box>
+              <Header />
+            </Toolbar>
+          </AppBar>
+        )}
         <Box sx={{ py: { xs: 1, sm: 2 } }}>{children}</Box>
       </Stack>
     </Box>

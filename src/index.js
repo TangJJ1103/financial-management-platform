@@ -16,7 +16,6 @@ import FamilyGoals from "./pages/Family/FamilyGoals";
 import FamilyManagement from "./pages/Family/FamilyManagement";
 import FamilyMembers from "./pages/Family/FamilyMembers";
 import FamilyInvitations from "./pages/Family/FamilyInvitations";
-import ToolDashboard from "./pages/Tool/ToolDashboard";
 import CurrencyConverter from "./pages/Tool/CurrencyConverter";
 import ViewFamilyExpenses from "./pages/Family/ViewFamilyExpenses";
 import NoInternetPage from "./pages/NoInternet/NoInternetPage";
@@ -91,8 +90,6 @@ root.render(
                           element={<FamilyInvitations />}
                         />
 
-                        {/* Tools Routes */}
-                        <Route path="/tools" element={<ToolDashboard />} />
                         <Route
                           path="/tools/currency-converter"
                           element={<CurrencyConverter />}

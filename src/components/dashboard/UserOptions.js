@@ -12,7 +12,7 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 import MoreVertRoundedIcon from "@mui/icons-material/MoreVertRounded";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import MenuButton from "../ComponentDesign/MenuButton";
+import MenuButton from "./MenuButton";
 import { useNavigate } from "react-router-dom";
 
 const MenuItem = styled(MuiMenuItem)({

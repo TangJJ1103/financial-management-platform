@@ -35,7 +35,7 @@ import {
   PeopleAlt as PeopleAltIcon,
   Notifications as NotificationsIcon,
 } from "@mui/icons-material";
-import { useFamilyInvitations } from "../../../components/family/FamilyInvitationsContext";
+import { useFamilyInvitations } from "../family/FamilyInvitationsContext";
 
 const mainListItems = [
   { text: "Dashboard", icon: <HomeRounded />, path: "/home" },
@@ -268,7 +268,14 @@ export default function MenuContent() {
   updatedMainListItems.splice(2, 0, getFamilyMenuItem(hasFamily));
 
   return (
-    <Stack sx={{ flexGrow: 1, p: 1, justifyContent: "space-between" }}>
+    <Stack
+      sx={{
+        flexGrow: 1,
+        p: 1,
+        justifyContent: "space-between",
+        pt: isMobile ? 6 : 0,
+      }}
+    >
       <List dense>
         {updatedMainListItems.map((item, index) => (
           <React.Fragment key={index}>

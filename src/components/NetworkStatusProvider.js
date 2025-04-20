@@ -37,18 +37,15 @@ export const NetworkStatusProvider = ({ children }) => {
       }
     };
 
-    // Add event listeners
     window.addEventListener("online", handleOnline);
     window.addEventListener("offline", handleOffline);
 
-    // Clean up
     return () => {
       window.removeEventListener("online", handleOnline);
       window.removeEventListener("offline", handleOffline);
     };
   }, [navigate]);
 
-  // Periodically check connection by making a small request
   useEffect(() => {
     const checkConnection = async () => {
       // Don't check if we're already on the NoInternet page
@@ -57,56 +54,46 @@ export const NetworkStatusProvider = ({ children }) => {
       if (!navigator.onLine) return;
 
       try {
-        // Use the getServerPing function instead of direct fetch
         const result = await getServerPing();
 
         if (result.isOnline) {
-          // We're online
           if (!isOnline) {
             setIsOnline(true);
             setLastOnlineTime(new Date());
           }
         } else {
-          // Connection failed
-          console.log("Connection check failed:", result.error);
           setIsOnline(false);
-          // Only navigate if we're not already on the NoInternet page
           if (window.location.pathname !== "/noInternet") {
             navigate("/noInternet");
           }
         }
       } catch (error) {
-        console.log("Connection check failed:", error);
         setIsOnline(false);
-        // Only navigate if we're not already on the NoInternet page
         if (window.location.pathname !== "/noInternet") {
           navigate("/noInternet");
         }
       }
     };
 
-    // Reduce check frequency to prevent excessive requests
-    const intervalId = setInterval(checkConnection, 60000); // Check every minute instead of 30 seconds
+    const intervalId = setInterval(checkConnection, 60000);
 
     return () => clearInterval(intervalId);
   }, [isOnline, navigate]);
 
-  // Periodically check if the user's family status has changed
   useEffect(() => {
     const checkFamilyStatus = async () => {
-      // Only check if user is logged in
       const user = JSON.parse(sessionStorage.getItem("user"));
+      const hasFamily = sessionStorage.getItem("hasFamily") === "true";
       if (!user || !user.userId) return;
 
       try {
         const result = await checkUserFamilyStatus(user.userId);
 
-        if (result.hasFamily) {
+        if (result.hasFamily && !hasFamily) {
           sessionStorage.setItem("hasFamily", result.hasFamily);
           sessionStorage.setItem("family", JSON.stringify(result.family));
           sessionStorage.setItem("familyRole", result.familyRole);
 
-          // Dispatch a custom event to notify components about the change
           window.dispatchEvent(
             new CustomEvent("familyStatusChanged", {
               detail: {
@@ -117,15 +104,10 @@ export const NetworkStatusProvider = ({ children }) => {
             })
           );
 
-          // Show notification to user
           if (window.location.pathname === "/family/invitations") {
-            // If on invitations page, navigate to family dashboard
             navigate("/family/viewExpenses");
-          } else {
-            // Otherwise just show a notification (you could implement this with a toast)
-            console.log("Your family request has been accepted!");
           }
-        } else {
+        } else if (!result.hasFamily && hasFamily) {
           sessionStorage.setItem("hasFamily", result.hasFamily);
           sessionStorage.removeItem("family");
           sessionStorage.removeItem("familyRole");
@@ -142,7 +124,6 @@ export const NetworkStatusProvider = ({ children }) => {
       }
     };
 
-    // Check every 30 seconds
     const intervalId = setInterval(checkFamilyStatus, 10000);
 
     return () => clearInterval(intervalId);
