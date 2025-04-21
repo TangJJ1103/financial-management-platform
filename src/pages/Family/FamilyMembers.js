@@ -43,9 +43,12 @@ import {
   ChildCare as ChildIcon,
   NotificationsActive as NotificationsActiveIcon,
   Edit as EditIcon,
+  ExitToApp as ExitToAppIcon,
+  Warning as WarningIcon,
 } from "@mui/icons-material";
 import { motion } from "framer-motion";
 import dayjs from "dayjs";
+import { useNavigate } from "react-router-dom";
 import {
   getFamilyMembers,
   inviteToFamily,
@@ -57,6 +60,7 @@ import JoinRequestsPanel from "../../components/family/JoinRequestsPanel";
 
 const FamilyMembers = () => {
   const theme = useTheme();
+  const navigate = useNavigate();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -83,6 +87,11 @@ const FamilyMembers = () => {
   const [openRoleDialog, setOpenRoleDialog] = useState(false);
   const [roleLoading, setRoleLoading] = useState(false);
   const [selectedRole, setSelectedRole] = useState("");
+
+  // Leave family states
+  const [openLeaveDialog, setOpenLeaveDialog] = useState(false);
+  const [leaveLoading, setLeaveLoading] = useState(false);
+  const [confirmLeaveText, setConfirmLeaveText] = useState("");
 
   const fetchFamilyMembers = async () => {
     try {
@@ -212,6 +221,18 @@ const FamilyMembers = () => {
     setSelectedRole("");
   };
 
+  // Handle opening leave family dialog
+  const handleOpenLeaveDialog = () => {
+    setConfirmLeaveText("");
+    setOpenLeaveDialog(true);
+  };
+
+  // Handle closing leave family dialog
+  const handleCloseLeaveDialog = () => {
+    setOpenLeaveDialog(false);
+    setConfirmLeaveText("");
+  };
+
   // Handle sending invitation
   const handleSendInvite = async () => {
     if (!inviteEmail) {
@@ -322,6 +343,56 @@ const FamilyMembers = () => {
       setError("Failed to update role. Please try again.");
     } finally {
       setRoleLoading(false);
+    }
+  };
+
+  // Handle leaving family (using removeFamilyMember API)
+  const handleLeaveFamily = async () => {
+    const familyName =
+      JSON.parse(sessionStorage.getItem("family"))?.familyName || "this family";
+
+    if (confirmLeaveText !== `leave ${familyName}`) {
+      setError(`Please type "leave ${familyName}" to confirm`);
+      return;
+    }
+
+    setLeaveLoading(true);
+    try {
+      const userId = JSON.parse(sessionStorage.getItem("user"))?.userId;
+
+      // Call the removeFamilyMember API to leave the family
+      const response = await removeFamilyMember(userId);
+
+      if (response.error) {
+        setError(response.message || "Failed to leave family");
+        setLeaveLoading(false);
+        handleCloseLeaveDialog();
+        return;
+      }
+
+      // Clear family data from session storage
+      sessionStorage.removeItem("family");
+      sessionStorage.removeItem("familyRole");
+
+      // Show success message
+      setSnackbar({
+        open: true,
+        message: `You have successfully left ${familyName}`,
+        severity: "success",
+      });
+
+      // Close dialog and redirect to dashboard
+      handleCloseLeaveDialog();
+
+      // Redirect to dashboard after a short delay
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 1500);
+    } catch (err) {
+      console.error("Error leaving family:", err);
+      setError("Failed to leave family. Please try again.");
+    } finally {
+      setLeaveLoading(false);
     }
   };
 
@@ -694,6 +765,76 @@ const FamilyMembers = () => {
                 )}
               </Paper>
             )}
+
+            {/* Leave Family Section */}
+            <Box
+              sx={{
+                mt: 4,
+                pt: 3,
+                borderTop: `1px solid ${theme.palette.divider}`,
+              }}
+            >
+              <Typography
+                variant="h6"
+                color="error"
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                  mb: 2,
+                }}
+              >
+                <WarningIcon color="error" />
+                Danger Zone
+              </Typography>
+
+              <Paper
+                elevation={0}
+                variant="outlined"
+                sx={{
+                  p: 3,
+                  borderRadius: 2,
+                  borderColor: theme.palette.error.main,
+                  backgroundColor:
+                    theme.palette.mode === "dark"
+                      ? "rgba(211, 47, 47, 0.1)"
+                      : "rgba(211, 47, 47, 0.05)",
+                }}
+              >
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    flexDirection: { xs: "column", sm: "row" },
+                    gap: { xs: 2, sm: 0 },
+                  }}
+                >
+                  <Box>
+                    <Typography variant="subtitle1" fontWeight="medium">
+                      Leave Family
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      This will remove you from the family. You will lose access
+                      to all family data.
+                    </Typography>
+                  </Box>
+
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    startIcon={<ExitToAppIcon />}
+                    onClick={handleOpenLeaveDialog}
+                    sx={{
+                      borderRadius: "8px",
+                      textTransform: "none",
+                    }}
+                  >
+                    Leave Family
+                  </Button>
+                </Box>
+              </Paper>
+            </Box>
           </>
         )}
 
@@ -828,6 +969,80 @@ const FamilyMembers = () => {
             startIcon={roleLoading ? <CircularProgress size={20} /> : null}
           >
             {roleLoading ? "Updating..." : "Update Role"}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Leave Family Dialog */}
+      <Dialog
+        open={openLeaveDialog}
+        onClose={handleCloseLeaveDialog}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle
+          sx={{
+            color: "error.main",
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+          }}
+        >
+          <WarningIcon color="error" />
+          Leave Family
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText sx={{ mb: 3 }}>
+            Are you sure you want to leave this family? This action cannot be
+            undone and you will lose access to all family data.
+          </DialogContentText>
+
+          <Alert severity="warning" sx={{ mb: 3 }}>
+            <Typography variant="body2">
+              If you are the last parent in this family, consider promoting
+              another member to parent role before leaving.
+            </Typography>
+          </Alert>
+
+          <Typography variant="body2" sx={{ mb: 1 }}>
+            To confirm, please type "
+            {`leave ${
+              JSON.parse(sessionStorage.getItem("family"))?.familyName ||
+              "this family"
+            }`}
+            " below:
+          </Typography>
+
+          <TextField
+            autoFocus
+            margin="dense"
+            fullWidth
+            variant="outlined"
+            value={confirmLeaveText}
+            onChange={(e) => setConfirmLeaveText(e.target.value)}
+            error={error && error.includes("type")}
+            helperText={error && error.includes("type") ? error : ""}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseLeaveDialog}>Cancel</Button>
+          <Button
+            onClick={handleLeaveFamily}
+            color="error"
+            variant="contained"
+            disabled={
+              leaveLoading ||
+              confirmLeaveText !==
+                `leave ${
+                  JSON.parse(sessionStorage.getItem("family"))?.familyName ||
+                  "this family"
+                }`
+            }
+            startIcon={
+              leaveLoading ? <CircularProgress size={20} /> : <ExitToAppIcon />
+            }
+          >
+            {leaveLoading ? "Leaving..." : "Leave Family"}
           </Button>
         </DialogActions>
       </Dialog>
