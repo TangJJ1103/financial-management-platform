@@ -323,7 +323,7 @@ const ViewFamilyExpenses = () => {
         "Original Amount": `${expense.amountEntry} ${expense.currencyType}`,
         "Payment Method": expense.paymentMethod,
         "Split Between": expense.splitBetween
-          .map((member) => member.name)
+          .map((member) => member.username)
           .join(", "),
         Date: formatDate(expense.expensesDate),
       }));
@@ -613,7 +613,9 @@ const ViewFamilyExpenses = () => {
                           .map((member) => [member.userId, member])
                       ).values(),
                     ].map((member) => {
-                      const avatar = getDefaultAvatar(member.name);
+                      const avatar = getDefaultAvatar(member.username);
+                      const hasImage = !!member.imageUrl;
+
                       return (
                         <MenuItem key={member.userId} value={member.userId}>
                           <Box
@@ -623,30 +625,23 @@ const ViewFamilyExpenses = () => {
                               gap: 1,
                             }}
                           >
-                            {typeof avatar === "string" ? (
-                              <Avatar
-                                src={avatar}
-                                alt={member.name}
-                                sx={{ width: 24, height: 24 }}
-                              />
-                            ) : (
-                              <Avatar
-                                alt={member.name}
-                                sx={{
-                                  bgcolor: avatar.color,
-                                  width: 24,
-                                  height: 24,
-                                  fontSize: "0.75rem",
-                                  border: (theme) =>
-                                    `1px solid ${theme.palette.divider}`,
-                                  color: "white",
-                                  fontWeight: "bold",
-                                }}
-                              >
-                                {avatar.initials}
-                              </Avatar>
-                            )}
-                            {member.name}
+                            <Avatar
+                              src={hasImage ? member.imageUrl : undefined}
+                              alt={member.username}
+                              sx={{
+                                bgcolor: hasImage ? undefined : avatar.color,
+                                width: 24,
+                                height: 24,
+                                fontSize: "0.75rem",
+                                border: (theme) =>
+                                  `1px solid ${theme.palette.divider}`,
+                                color: "white",
+                                fontWeight: "bold",
+                              }}
+                            >
+                              {!hasImage && avatar.initials}
+                            </Avatar>
+                            {member.username}
                           </Box>
                         </MenuItem>
                       );
@@ -754,29 +749,34 @@ const ViewFamilyExpenses = () => {
                               }}
                             >
                               {expense.splitBetween.map((member) => {
-                                const avatar = getDefaultAvatar(member.name);
+                                const avatar = getDefaultAvatar(
+                                  member.username
+                                );
+                                const hasImage = !!member.imageUrl;
+
                                 return (
                                   <Tooltip
                                     key={member.userId}
-                                    title={member.name}
+                                    title={member.username}
                                   >
-                                    {typeof avatar === "string" ? (
-                                      <Avatar src={avatar} alt={member.name} />
-                                    ) : (
-                                      <Avatar
-                                        alt={member.name}
-                                        sx={{
-                                          bgcolor: avatar.color,
-                                          fontSize: "0.75rem",
-                                          border: (theme) =>
-                                            `1px solid ${theme.palette.divider}`,
-                                          color: "white",
-                                          fontWeight: "bold",
-                                        }}
-                                      >
-                                        {avatar.initials}
-                                      </Avatar>
-                                    )}
+                                    <Avatar
+                                      src={
+                                        hasImage ? member.imageUrl : undefined
+                                      }
+                                      alt={member.username}
+                                      sx={{
+                                        bgcolor: hasImage
+                                          ? undefined
+                                          : avatar.color,
+                                        fontSize: "0.75rem",
+                                        border: (theme) =>
+                                          `1px solid ${theme.palette.divider}`,
+                                        color: "white",
+                                        fontWeight: "bold",
+                                      }}
+                                    >
+                                      {!hasImage && avatar.initials}
+                                    </Avatar>
                                   </Tooltip>
                                 );
                               })}

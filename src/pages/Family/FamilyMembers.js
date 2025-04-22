@@ -293,7 +293,7 @@ const FamilyMembers = () => {
       );
       setSnackbar({
         open: true,
-        message: `${selectedMember.name} has been removed from the family`,
+        message: `${selectedMember.username} has been removed from the family`,
         severity: "success",
       });
       handleCloseRemoveDialog();
@@ -334,7 +334,7 @@ const FamilyMembers = () => {
       );
       setSnackbar({
         open: true,
-        message: `${selectedMember.name}'s role has been updated to ${selectedRole}`,
+        message: `${selectedMember.username}'s role has been updated to ${selectedRole}`,
         severity: "success",
       });
       handleCloseRoleDialog();
@@ -524,7 +524,8 @@ const FamilyMembers = () => {
                 // Mobile view - cards
                 <Grid container spacing={2}>
                   {members.map((member) => {
-                    const avatar = getDefaultAvatar(member.name);
+                    const avatar = getDefaultAvatar(member.username);
+                    const hasImage = !!member.imageUrl;
                     return (
                       <Grid item xs={12} key={member.userId}>
                         <Card variant="outlined" sx={{ borderRadius: 2 }}>
@@ -544,20 +545,29 @@ const FamilyMembers = () => {
                                 }}
                               >
                                 <Avatar
+                                  src={hasImage ? member.imageUrl : undefined}
+                                  alt={member.username}
                                   sx={{
-                                    bgcolor: avatar.color,
+                                    bgcolor: hasImage
+                                      ? undefined
+                                      : avatar.color,
                                     width: 40,
                                     height: 40,
+                                    fontSize: "1rem",
+                                    fontWeight: "bold",
+                                    color: "white",
+                                    border: (theme) =>
+                                      `1px solid ${theme.palette.divider}`,
                                   }}
                                 >
-                                  {avatar.initials}
+                                  {!hasImage && avatar.initials}
                                 </Avatar>
                                 <Box>
                                   <Typography
                                     variant="subtitle1"
                                     fontWeight="medium"
                                   >
-                                    {member.name}
+                                    {member.username}
                                   </Typography>
                                   <Typography
                                     variant="body2"
@@ -654,7 +664,8 @@ const FamilyMembers = () => {
                     </TableHead>
                     <TableBody>
                       {members.map((member) => {
-                        const avatar = getDefaultAvatar(member.name);
+                        const avatar = getDefaultAvatar(member.username);
+                        const hasImage = !!member.imageUrl;
                         return (
                           <TableRow key={member.userId} hover>
                             <TableCell>
@@ -665,11 +676,26 @@ const FamilyMembers = () => {
                                   gap: 2,
                                 }}
                               >
-                                <Avatar sx={{ bgcolor: avatar.color }}>
-                                  {avatar.initials}
+                                <Avatar
+                                  src={hasImage ? member.imageUrl : undefined}
+                                  alt={member.username}
+                                  sx={{
+                                    bgcolor: hasImage
+                                      ? undefined
+                                      : avatar.color,
+                                    width: 40,
+                                    height: 40,
+                                    fontSize: "1rem",
+                                    fontWeight: "bold",
+                                    color: "white",
+                                    border: (theme) =>
+                                      `1px solid ${theme.palette.divider}`,
+                                  }}
+                                >
+                                  {!hasImage && avatar.initials}
                                 </Avatar>
                                 <Typography variant="body1">
-                                  {member.name}
+                                  {member.username}
                                 </Typography>
                               </Box>
                             </TableCell>
@@ -879,7 +905,7 @@ const FamilyMembers = () => {
         <DialogTitle>Remove Family Member</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to remove {selectedMember?.name} from your
+            Are you sure you want to remove {selectedMember?.username} from your
             family? This action cannot be undone.
           </DialogContentText>
         </DialogContent>

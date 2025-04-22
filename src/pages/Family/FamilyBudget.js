@@ -332,7 +332,7 @@ const FamilyBudget = () => {
   // Calculate percentage
   const calculatePercentage = (used, total) => {
     if (total <= 0) return 0;
-    return Math.min(Math.round((used / total) * 100), 100);
+    return Math.round((used / total) * 100);
   };
 
   if (loading) {

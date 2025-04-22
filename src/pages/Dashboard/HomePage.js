@@ -954,6 +954,7 @@ const HomePage = () => {
                                 },
                               }}
                             >
+                              {console.log(member)}
                               <Avatar
                                 sx={{
                                   width: 56,
@@ -963,8 +964,10 @@ const HomePage = () => {
                                     ? theme.palette.secondary.main
                                     : theme.palette.primary.main,
                                 }}
+                                src={member.imageUrl}
+                                alt={member.username.charAt(0).toUpperCase()}
                               >
-                                {member.name.charAt(0).toUpperCase()}
+                                {member.username.charAt(0).toUpperCase()}
                               </Avatar>
                               <Typography
                                 variant="subtitle2"
@@ -975,8 +978,8 @@ const HomePage = () => {
                                 }}
                               >
                                 {isCurrentUser
-                                  ? `${member.name} (You)`
-                                  : member.name}
+                                  ? `${member.username} (You)`
+                                  : member.username}
                               </Typography>
                               <Chip
                                 label={member.role}

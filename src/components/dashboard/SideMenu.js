@@ -70,8 +70,10 @@ export default function SideMenu() {
       >
         <Avatar
           sizes="small"
-          alt="Riley Carter"
-          src="/static/images/avatar/7.jpg"
+          alt={JSON.parse(sessionStorage.getItem("user"))?.username || "User"}
+          src={
+            JSON.parse(sessionStorage.getItem("user"))?.imageUrl || undefined
+          }
           sx={{
             width: 36,
             height: 36,
@@ -82,12 +84,12 @@ export default function SideMenu() {
             const user = JSON.parse(sessionStorage.getItem("user"));
             const username = user?.username || "";
             const shortForm =
-              username.split(/(?=[A-Z])/).length > 1 // If camelCase like "testAccount"
+              username.split(/(?=[A-Z])/).length > 1
                 ? username
                     .split(/(?=[A-Z])/)
                     .map((word) => word[0])
                     .join("")
-                : username.slice(0, 2).toUpperCase(); // fallback: take first 2 letters
+                : username.slice(0, 2).toUpperCase();
             return shortForm.toUpperCase();
           })()}
         </Avatar>

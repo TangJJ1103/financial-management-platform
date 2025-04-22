@@ -423,14 +423,14 @@ const AddFamilyExpenses = () => {
                             (id) =>
                               familyMembers.find(
                                 (member) => member.userId === id
-                              )?.name
+                              )?.username
                           )
                           .join(", ");
                       }}
                     >
                       {familyMembers.map((member) => (
                         <MenuItem key={member.userId} value={member.userId}>
-                          {member.name}
+                          {member.username}
                         </MenuItem>
                       ))}
                     </Select>

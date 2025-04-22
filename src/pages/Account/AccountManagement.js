@@ -24,7 +24,11 @@ import SaveIcon from "@mui/icons-material/Save";
 import LockResetIcon from "@mui/icons-material/LockReset";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import { getUserById, updateUser } from "../../dataHooks/userHooks";
+import {
+  getUserById,
+  updateUser,
+  uploadImage,
+} from "../../dataHooks/userHooks";
 
 // Styled components
 const ProfileAvatar = styled(Avatar)(({ theme }) => ({
@@ -68,12 +72,13 @@ const AccountManagement = () => {
   const [tabValue, setTabValue] = useState(0);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [imageFile, setImageFile] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     username: "",
     email: "",
-    currencyType: "MYR",
+    imageUrl: "",
   });
   const [passwordData, setPasswordData] = useState({
     currentPassword: "",
@@ -104,7 +109,7 @@ const AccountManagement = () => {
             name: response.data.userData.name,
             username: response.data.userData.username,
             email: response.data.userData.email || "",
-            currencyType: response.data.userData.currencyType,
+            imageUrl: response.data.userData.imageUrl,
           });
 
           setPasswordData({
@@ -153,18 +158,41 @@ const AccountManagement = () => {
 
   const handleProfileUpdate = async () => {
     try {
+      let imageUrl = formData.imageUrl;
+
+      if (imageFile) {
+        const uploadResponse = await uploadImage(imageFile);
+        if (uploadResponse.error) {
+          setSnackbar({
+            open: true,
+            message: "Failed to update profile",
+            severity: "error",
+          });
+          return;
+        }
+
+        imageUrl = uploadResponse.data.imageUrl || "";
+      }
+
       // Prepare data for API
       const updateData = {
         userId: user.userId,
         name: formData.name,
         username: formData.username,
         email: formData.email,
-        currencyType: formData.currencyType,
+        imageUrl: imageUrl,
       };
 
       const response = await updateUser(updateData);
 
       if (!response.error) {
+        const currentSession = JSON.parse(sessionStorage.getItem("user")) || {};
+        currentSession.imageUrl = imageUrl;
+        sessionStorage.setItem("user", JSON.stringify(currentSession));
+        setFormData((prev) => ({
+          ...prev,
+          imageUrl: imageUrl,
+        }));
         setSnackbar({
           open: true,
           message: "Profile updated successfully",
@@ -276,8 +304,10 @@ const AccountManagement = () => {
               }}
             >
               <ProfileAvatar
-                src="/placeholder.svg?height=120&width=120"
-                alt={`${formData.username}`}
+                src={
+                  formData.imageUrl || "/placeholder.svg?height=120&width=120"
+                }
+                alt={formData.username}
               />
               <Box sx={{ mt: 2, textAlign: "center" }}>
                 <Button
@@ -287,7 +317,20 @@ const AccountManagement = () => {
                   sx={{ mt: 2 }}
                 >
                   Change Photo
-                  <VisuallyHiddenInput type="file" accept="image/*" />
+                  <VisuallyHiddenInput
+                    type="file"
+                    accept="image/png, image/jpeg"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        setImageFile(file);
+                        setFormData({
+                          ...formData,
+                          imageUrl: URL.createObjectURL(file),
+                        });
+                      }
+                    }}
+                  />
                 </Button>
               </Box>
             </Grid>
@@ -320,14 +363,6 @@ const AccountManagement = () => {
                     type="email"
                     value={formData.email}
                     onChange={handleInputChange}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="Preferred Currency"
-                    name="currencyType"
-                    value={formData.currencyType}
                   />
                 </Grid>
                 <Grid item xs={12}>

@@ -54,6 +54,8 @@ const apiEndPoints = {
   getJoinRequests: "familyData/getJoinRequests/",
   respondToJoinRequest: "familyData/respondJoinRequest",
   updateFamilyRole: "familyData/updateFamilyRole",
+
+  uploadImage: "s3/uploadImage",
 };
 
 const getApiEndpoint = (type) => {

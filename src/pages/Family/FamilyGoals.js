@@ -256,7 +256,7 @@ const FamilyGoals = () => {
         // Add the current user as a default contributor
         {
           userId: JSON.parse(sessionStorage.getItem("user"))?.userId,
-          name: JSON.parse(sessionStorage.getItem("user"))?.name || "You",
+          name: JSON.parse(sessionStorage.getItem("user"))?.username || "You",
         },
       ],
     });
@@ -481,7 +481,7 @@ const FamilyGoals = () => {
       // Ensure contributors are in the correct format
       const contributors = formData.contributors.map((contributor) => ({
         userId: contributor.userId,
-        name: contributor.name,
+        name: contributor.username,
       }));
 
       // Create the request payload according to the required format
@@ -701,7 +701,7 @@ const FamilyGoals = () => {
     // Make sure the transaction includes the contributor's name
     const enhancedTransaction = {
       ...transaction,
-      contributorName: transaction.name || "Unknown", // Ensure we have a name field
+      contributorName: transaction.username || "Unknown", // Ensure we have a name field
     };
     setSelectedTransaction(enhancedTransaction);
     setOpenTransactionDetails(true);
@@ -1170,15 +1170,27 @@ const FamilyGoals = () => {
                                 >
                                   {goal.contributors?.map((member) => {
                                     const avatar = getDefaultAvatar(
-                                      member.name
+                                      member?.username || "User"
                                     );
+
                                     return (
                                       <Tooltip
                                         key={member.userId}
-                                        title={member.name}
+                                        title={member.username}
                                       >
-                                        <Avatar sx={{ bgcolor: avatar.color }}>
-                                          {avatar.initials}
+                                        <Avatar
+                                          src={member.imageUrl || undefined}
+                                          alt={member.username}
+                                          sx={{
+                                            bgcolor: member.imageUrl
+                                              ? "transparent"
+                                              : avatar.color,
+                                            fontSize: "0.75rem",
+                                            color: "white",
+                                            fontWeight: "bold",
+                                          }}
+                                        >
+                                          {!member.imageUrl && avatar.initials}
                                         </Avatar>
                                       </Tooltip>
                                     );
@@ -1467,14 +1479,28 @@ const FamilyGoals = () => {
                                 }}
                               >
                                 {goal.contributors?.map((member) => {
-                                  const avatar = getDefaultAvatar(member.name);
+                                  const avatar = getDefaultAvatar(
+                                    member?.username || "User"
+                                  );
+
                                   return (
                                     <Tooltip
                                       key={member.userId}
-                                      title={member.name}
+                                      title={member.username}
                                     >
-                                      <Avatar sx={{ bgcolor: avatar.color }}>
-                                        {avatar.initials}
+                                      <Avatar
+                                        src={member.imageUrl || undefined}
+                                        alt={member.username}
+                                        sx={{
+                                          bgcolor: member.imageUrl
+                                            ? "transparent"
+                                            : avatar.color,
+                                          fontSize: "0.75rem",
+                                          color: "white",
+                                          fontWeight: "bold",
+                                        }}
+                                      >
+                                        {!member.imageUrl && avatar.initials}
                                       </Avatar>
                                     </Tooltip>
                                   );
@@ -1727,16 +1753,25 @@ const FamilyGoals = () => {
                     const isSelected = formData.contributors.some(
                       (c) => c.userId === member.userId
                     );
-                    const avatar = getDefaultAvatar(member.name);
+
+                    const avatarData = getDefaultAvatar(member.username);
+
                     return (
                       <Chip
                         key={member.userId}
                         avatar={
-                          <Avatar sx={{ bgcolor: avatar.color }}>
-                            {avatar.initials}
-                          </Avatar>
+                          member.imageUrl ? (
+                            <Avatar
+                              src={member.imageUrl}
+                              alt={member.username}
+                            />
+                          ) : (
+                            <Avatar sx={{ bgcolor: avatarData.color }}>
+                              {avatarData.initials}
+                            </Avatar>
+                          )
                         }
-                        label={member.name}
+                        label={member.username}
                         onClick={() => handleContributorToggle(member)}
                         color={isSelected ? "primary" : "default"}
                         variant={isSelected ? "filled" : "outlined"}
@@ -2011,7 +2046,7 @@ const FamilyGoals = () => {
                   Contributed By
                 </Typography>
                 <Typography variant="body1">
-                  {selectedTransaction.name || "Unknown"}
+                  {selectedTransaction.username || "Unknown"}
                 </Typography>
               </Box>
 
