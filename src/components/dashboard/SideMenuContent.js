@@ -294,17 +294,7 @@ export default function MenuContent() {
                     },
                   }}
                 >
-                  <ListItemIcon sx={{ minWidth: 40 }}>
-                    {item.text === "Family" &&
-                    !hasFamily &&
-                    invitationCount > 0 ? (
-                      <Badge badgeContent={invitationCount} color="error">
-                        {item.icon}
-                      </Badge>
-                    ) : (
-                      item.icon
-                    )}
-                  </ListItemIcon>
+                  <ListItemIcon sx={{ minWidth: 40 }}>{item.icon}</ListItemIcon>
                   <ListItemText
                     primary={item.text}
                     primaryTypographyProps={{
@@ -327,15 +317,7 @@ export default function MenuContent() {
                     },
                   }}
                 >
-                  <ListItemIcon sx={{ minWidth: 40 }}>
-                    {item.text === "Family" && invitationCount > 0 ? (
-                      <Badge badgeContent={invitationCount} color="error">
-                        {item.icon}
-                      </Badge>
-                    ) : (
-                      item.icon
-                    )}
-                  </ListItemIcon>
+                  <ListItemIcon sx={{ minWidth: 40 }}>{item.icon}</ListItemIcon>
                   <ListItemText
                     primary={item.text}
                     primaryTypographyProps={{

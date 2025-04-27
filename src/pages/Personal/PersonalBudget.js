@@ -30,6 +30,7 @@ import {
   getUserBudget,
   addUserBudget,
   updateUserBudget,
+  deleteUserBudget,
 } from "../../dataHooks/budgetHooks";
 
 // Import the new dialog components
@@ -227,26 +228,18 @@ const PersonalBudget = () => {
 
     try {
       setDeleteLoading(true);
-      // const response = await deleteUserBudget(budgetToDelete.budgetId);
+      const response = await deleteUserBudget(budgetToDelete.budgetId);
 
-      // if (response.error) {
-      //   setError(response.message || "Failed to delete budget");
-      // } else {
-      //   // Refresh budget data
-      //   const data = await getUserBudget();
-      //   if (data.budgetData) {
-      //     setBudgets(data.budgetData);
-      //     calculateTotals(data.budgetData);
-      //   }
-      // }
-
-      // For demo purposes, just remove from state
-      setBudgets(
-        budgets.filter((budget) => budget.budgetId !== budgetToDelete.budgetId)
-      );
-      calculateTotals(
-        budgets.filter((budget) => budget.budgetId !== budgetToDelete.budgetId)
-      );
+      if (response.error) {
+        setError(response.message || "Failed to delete budget");
+      } else {
+        // Refresh budget data
+        const response = await getUserBudget();
+        if (response.data.budgetData) {
+          setBudgets(response.data.budgetData);
+          calculateTotals(response.data.budgetData);
+        }
+      }
 
       handleCloseDeleteDialog();
     } catch (err) {
@@ -307,7 +300,7 @@ const PersonalBudget = () => {
   // Calculate percentage
   const calculatePercentage = (used, total) => {
     if (total <= 0) return 0;
-    return Math.min(Math.round((used / total) * 100), 100);
+    return Math.round((used / total) * 100);
   };
 
   if (loading && budgets.length === 0) {

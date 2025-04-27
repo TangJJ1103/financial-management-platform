@@ -169,8 +169,11 @@ const FamilyManagement = () => {
         });
 
         // Update user's hasFamily status in session storage
-        sessionStorage.setItem("hasFamily", "true"); // Store as string "true" instead of boolean
-        // Dispatch storage event to notify other components
+        sessionStorage.setItem("hasFamily", "true");
+        sessionStorage.setItem(
+          "family",
+          JSON.stringify(response.data.familyData)
+        );
         window.dispatchEvent(new Event("storage"));
       }
     } catch (error) {

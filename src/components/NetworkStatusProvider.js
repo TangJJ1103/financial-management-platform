@@ -84,6 +84,7 @@ export const NetworkStatusProvider = ({ children }) => {
     const checkFamilyStatus = async () => {
       const user = JSON.parse(sessionStorage.getItem("user"));
       const hasFamily = sessionStorage.getItem("hasFamily") === "true";
+      const familyRole = sessionStorage.getItem("familyRole");
       if (!user || !user.userId) return;
 
       try {
@@ -115,6 +116,19 @@ export const NetworkStatusProvider = ({ children }) => {
             new CustomEvent("familyStatusChanged", {
               detail: {
                 hasFamily: result.hasFamily,
+              },
+            })
+          );
+        } else if (
+          result.familyRole !== familyRole &&
+          result.hasFamily &&
+          hasFamily
+        ) {
+          sessionStorage.setItem("familyRole", result.familyRole);
+          window.dispatchEvent(
+            new CustomEvent("familyStatusChanged", {
+              detail: {
+                familyRole: result.familyRole,
               },
             })
           );

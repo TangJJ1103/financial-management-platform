@@ -26,6 +26,7 @@ import {
   Tooltip,
   useTheme,
   useMediaQuery,
+  Badge,
   Card,
   CardContent,
   Grid,
@@ -373,6 +374,7 @@ const FamilyMembers = () => {
       // Clear family data from session storage
       sessionStorage.removeItem("family");
       sessionStorage.removeItem("familyRole");
+      sessionStorage.setItem("hasFamily", "false");
 
       // Show success message
       setSnackbar({
@@ -504,7 +506,18 @@ const FamilyMembers = () => {
             <Tab label="Members" icon={<GroupIcon />} iconPosition="start" />
             <Tab
               label="Join Requests"
-              icon={<NotificationsActiveIcon />}
+              icon={
+                <Badge
+                  badgeContent={joinRequestsCount}
+                  color="error"
+                  anchorOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                  }}
+                >
+                  <NotificationsActiveIcon />
+                </Badge>
+              }
               iconPosition="start"
               sx={{
                 "& .MuiBadge-root": { mr: 1 },
@@ -865,7 +878,13 @@ const FamilyMembers = () => {
         )}
 
         {/* Join Requests Tab - Only visible to admins */}
-        {isAdmin && tabValue === 1 && <JoinRequestsPanel />}
+        {isAdmin && tabValue === 1 && (
+          <JoinRequestsPanel
+            setJoinRequestsCount={setJoinRequestsCount}
+            joinRequestsCount={joinRequestsCount}
+            fetchFamilyMembers={fetchFamilyMembers}
+          />
+        )}
       </motion.div>
 
       {/* Invite Dialog */}

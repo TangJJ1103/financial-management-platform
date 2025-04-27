@@ -39,7 +39,11 @@ import {
 // Extend dayjs with relativeTime plugin
 dayjs.extend(relativeTime);
 
-const JoinRequestsPanel = () => {
+const JoinRequestsPanel = ({
+  setJoinRequestsCount,
+  joinRequestsCount,
+  fetchFamilyMembers,
+}) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -119,6 +123,9 @@ const JoinRequestsPanel = () => {
         setJoinRequests((prev) =>
           prev.filter((req) => req.joinRequestId !== joinRequestId)
         );
+
+        setJoinRequestsCount(joinRequestsCount - 1);
+        fetchFamilyMembers();
 
         // Show success message
         setSnackbar({

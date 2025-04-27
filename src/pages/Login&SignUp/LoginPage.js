@@ -14,6 +14,7 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
+  CircularProgress,
 } from "@mui/material";
 import { motion } from "framer-motion";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
@@ -22,12 +23,12 @@ import KeyboardIcon from "@mui/icons-material/Keyboard";
 import { userRegister, validateLogin } from "../../dataHooks/authHooks";
 import { getCurrencyList } from "../../dataHooks/currencyHooks";
 import { useNavigate } from "react-router-dom";
-import currency_flags from "../../currency_flags.json";
 
 const LoginPage = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [isLoginPage, setIsLoginPage] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [currencyList, setCurrencyList] = useState([]);
   const [showPassword, setShowPassword] = useState(false);
   const [usernameOrEmail, setUsernameOrEmail] = useState("");
@@ -83,6 +84,7 @@ const LoginPage = () => {
     }
 
     try {
+      setIsLoading(true);
       const response = await validateLogin({ usernameOrEmail, password });
       if (response.error) {
         setError(response.message || "Invalid credentials.");
@@ -109,6 +111,8 @@ const LoginPage = () => {
       }
     } catch (error) {
       setError("Something went wrong. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -132,6 +136,7 @@ const LoginPage = () => {
     }
 
     try {
+      setIsLoading(true);
       const response = await userRegister(formData);
       if (response.error) {
         setError(response.message);
@@ -142,6 +147,8 @@ const LoginPage = () => {
     } catch (error) {
       setError("Something went wrong. Please try again.");
       console.error("Register error:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -304,7 +311,11 @@ const LoginPage = () => {
                         },
                       }}
                     >
-                      Sign In
+                      {isLoading ? (
+                        <CircularProgress size={24} sx={{ color: "white" }} />
+                      ) : (
+                        "Sign In"
+                      )}
                     </Button>
                   </motion.div>
                 </>
@@ -400,7 +411,11 @@ const LoginPage = () => {
                         },
                       }}
                     >
-                      Create Account
+                      {isLoading ? (
+                        <CircularProgress size={24} sx={{ color: "white" }} />
+                      ) : (
+                        "Create Account"
+                      )}
                     </Button>
                   </motion.div>
                 </>

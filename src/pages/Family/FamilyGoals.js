@@ -190,12 +190,22 @@ const FamilyGoals = () => {
           return;
         }
 
-        // Extract goals data from the correct path: response.data.goalsData
+        const userId = JSON.parse(sessionStorage.getItem("user")).userId;
         const allGoals = response.data.goalsData || [];
-
-        // Filter goals based on isAchieved attribute
-        const activeGoals = allGoals.filter((goal) => !goal.isAchieved);
-        const completedGoals = allGoals.filter((goal) => goal.isAchieved);
+        const activeGoals = allGoals.filter(
+          (goal) =>
+            !goal.isAchieved &&
+            goal.contributors.some(
+              (contributor) => contributor.userId === userId
+            )
+        );
+        const completedGoals = allGoals.filter(
+          (goal) =>
+            goal.isAchieved &&
+            goal.contributors.some(
+              (contributor) => contributor.userId === userId
+            )
+        );
 
         setGoals(activeGoals);
         setAchievedGoals(completedGoals);
@@ -522,9 +532,22 @@ const FamilyGoals = () => {
       // Refresh goals data
       const goalsResponse = await getFamilyGoals();
       if (!goalsResponse.error) {
+        const userId = JSON.parse(sessionStorage.getItem("user")).userId;
         const allGoals = goalsResponse.data.goalsData || [];
-        const activeGoals = allGoals.filter((goal) => !goal.isAchieved);
-        const completedGoals = allGoals.filter((goal) => goal.isAchieved);
+        const activeGoals = allGoals.filter(
+          (goal) =>
+            !goal.isAchieved &&
+            goal.contributors.some(
+              (contributor) => contributor.userId === userId
+            )
+        );
+        const completedGoals = allGoals.filter(
+          (goal) =>
+            goal.isAchieved &&
+            goal.contributors.some(
+              (contributor) => contributor.userId === userId
+            )
+        );
 
         setGoals(activeGoals);
         setAchievedGoals(completedGoals);
@@ -593,9 +616,22 @@ const FamilyGoals = () => {
       // Refresh goals data
       const goalsResponse = await getFamilyGoals();
       if (!goalsResponse.error) {
+        const userId = JSON.parse(sessionStorage.getItem("user")).userId;
         const allGoals = goalsResponse.data.goalsData || [];
-        const activeGoals = allGoals.filter((goal) => !goal.isAchieved);
-        const completedGoals = allGoals.filter((goal) => goal.isAchieved);
+        const activeGoals = allGoals.filter(
+          (goal) =>
+            !goal.isAchieved &&
+            goal.contributors.some(
+              (contributor) => contributor.userId === userId
+            )
+        );
+        const completedGoals = allGoals.filter(
+          (goal) =>
+            goal.isAchieved &&
+            goal.contributors.some(
+              (contributor) => contributor.userId === userId
+            )
+        );
 
         // Check if any goal was achieved
         const achievedGoal = activeGoals.find(
@@ -654,9 +690,24 @@ const FamilyGoals = () => {
       // Refresh goals data
       const goalsResponse = await getFamilyGoals();
       if (!goalsResponse.error) {
+        const userId = JSON.parse(sessionStorage.getItem("user")).userId;
         const allGoals = goalsResponse.data.goalsData || [];
-        const activeGoals = allGoals.filter((goal) => !goal.isAchieved);
-        const completedGoals = allGoals.filter((goal) => goal.isAchieved);
+        const activeGoals = allGoals.filter(
+          (goal) =>
+            !goal.isAchieved &&
+            goal.contributors.some(
+              (contributor) => contributor.userId === userId
+            )
+        );
+        const completedGoals = allGoals.filter(
+          (goal) =>
+            goal.isAchieved &&
+            goal.contributors.some(
+              (contributor) => contributor.userId === userId
+            )
+        );
+        console.log(activeGoals);
+        console.log(completedGoals);
 
         setGoals(activeGoals);
         setAchievedGoals(completedGoals);
@@ -933,20 +984,18 @@ const FamilyGoals = () => {
             Family Goals
           </Typography>
 
-          {familyRole !== "child" && (
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
-              onClick={handleAddGoal}
-              sx={{
-                borderRadius: "8px",
-                textTransform: "none",
-                py: 1,
-              }}
-            >
-              Add Goal
-            </Button>
-          )}
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={handleAddGoal}
+            sx={{
+              borderRadius: "8px",
+              textTransform: "none",
+              py: 1,
+            }}
+          >
+            Add Goal
+          </Button>
         </Box>
 
         {error && (

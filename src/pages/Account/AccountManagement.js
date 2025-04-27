@@ -235,20 +235,19 @@ const AccountManagement = () => {
         newPassword: passwordData.newPassword,
       };
 
-      // Here you would call your API to update the password
-      // For now, we'll just simulate a successful update
-      console.log("Password data to update:", passwordUpdateData);
-
-      setSnackbar({
-        open: true,
-        message: "Password updated successfully",
-        severity: "success",
-      });
-      setPasswordData({
-        currentPassword: "",
-        newPassword: "",
-        confirmPassword: "",
-      });
+      const response = await updateUser(passwordUpdateData);
+      if (!response.error) {
+        setPasswordData({
+          currentPassword: response.data.userData.password,
+          newPassword: "",
+          confirmPassword: "",
+        });
+        setSnackbar({
+          open: true,
+          message: "Profile updated successfully",
+          severity: "success",
+        });
+      }
     } catch (error) {
       console.error("Error updating password:", error);
       setSnackbar({
