@@ -374,7 +374,6 @@ const FamilyMembers = () => {
       // Clear family data from session storage
       sessionStorage.removeItem("family");
       sessionStorage.removeItem("familyRole");
-      sessionStorage.setItem("hasFamily", "false");
 
       // Show success message
       setSnackbar({
@@ -388,7 +387,7 @@ const FamilyMembers = () => {
 
       // Redirect to dashboard after a short delay
       setTimeout(() => {
-        navigate("/dashboard");
+        navigate("/home");
       }, 1500);
     } catch (err) {
       console.error("Error leaving family:", err);

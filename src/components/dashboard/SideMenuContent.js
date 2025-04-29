@@ -135,32 +135,24 @@ export default function MenuContent() {
     // Initial check
     updateFamilyStatus();
 
-    // Add event listener for storage changes
     const handleStorageChange = (e) => {
       if (e.key === "hasFamily") {
         updateFamilyStatus();
       }
     };
 
-    // Add event listener for custom familyStatusChanged event
     const handleFamilyStatusChange = (e) => {
-      console.log("Family status changed event received", e.detail);
-
       setHasFamily(e.detail.hasFamily);
       sessionStorage.setItem("hasFamily", e.detail.hasFamily);
 
-      // If the user now has a family, open the family sublist
       if (e.detail.hasFamily) {
         setOpenSublist((prev) => ({ ...prev, family: true }));
-      } else {
-        navigate("/home");
       }
     };
 
     window.addEventListener("storage", handleStorageChange);
     window.addEventListener("familyStatusChanged", handleFamilyStatusChange);
 
-    console.log(sessionStorage);
     // Cleanup
     return () => {
       window.removeEventListener("storage", handleStorageChange);
@@ -186,14 +178,6 @@ export default function MenuContent() {
         }!`,
         severity: "info",
       });
-
-      // Play a notification sound (optional)
-      try {
-        const audio = new Audio("/notification.mp3");
-        audio.play();
-      } catch (soundError) {
-        console.log("Sound notification not supported");
-      }
     }
 
     // Update previous count

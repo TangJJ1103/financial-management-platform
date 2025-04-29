@@ -407,7 +407,6 @@ const AddFamilyExpenses = () => {
                   <FormControl fullWidth size={isMobile ? "small" : "medium"}>
                     <InputLabel id="splitBetweenLabel">
                       Split Between
-                      {console.log(familyMembers)}
                     </InputLabel>
                     <Select
                       multiple

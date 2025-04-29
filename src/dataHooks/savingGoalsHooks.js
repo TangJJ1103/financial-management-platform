@@ -59,7 +59,6 @@ export const addFamilyGoal = async (goalData) => {
 };
 
 export const updateFamilyGoal = async (goalData) => {
-  console.log(goalData);
   const url = getApiEndpoint("updateFamilyGoal");
   const response = await axiosInstance.put(url, goalData);
   return response;

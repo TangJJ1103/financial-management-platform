@@ -20,6 +20,5 @@ export const getCurrencyConverter = async (
 export const getCurrencyList = async () => {
   const url = getApiEndpoint("getCurrencyList");
   const response = await axiosInstance.get(url);
-  console.log(response);
   return response;
 };

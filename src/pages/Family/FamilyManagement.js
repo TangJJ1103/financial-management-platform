@@ -19,11 +19,6 @@ import {
   InputAdornment,
   Snackbar,
   Alert,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
   useTheme,
   useMediaQuery,
   CircularProgress,
@@ -41,7 +36,6 @@ import {
   createFamily,
   joinFamily,
   searchFamilies,
-  inviteToFamily,
 } from "../../dataHooks/familyHooks";
 
 const FamilyManagement = () => {
@@ -56,9 +50,6 @@ const FamilyManagement = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
-  const [inviteEmail, setInviteEmail] = useState("");
-  const [selectedFamily, setSelectedFamily] = useState(null);
-  const [openInviteDialog, setOpenInviteDialog] = useState(false);
   const [alert, setAlert] = useState({
     open: false,
     message: "",
@@ -74,31 +65,25 @@ const FamilyManagement = () => {
   const handleNewFamilyChange = (e) => {
     const { name, value } = e.target;
 
-    // Validation rules
     if (name === "name") {
-      // Prevent whitespace as the first character
       if (value.length > 0 && value[0] === " ") {
-        return; // Reject input that starts with whitespace
+        return;
       }
 
-      // Only allow alphabets, numbers, and spaces for family name
       const nameRegex = /^[a-zA-Z0-9 ]*$/;
       if (!nameRegex.test(value)) {
-        return; // Reject invalid characters
+        return;
       }
-      // Enforce max length of 15 characters
       if (value.length > 15) {
         return;
       }
     }
 
     if (name === "tag") {
-      // Only allow alphabets and numbers for family tag (no spaces)
       const tagRegex = /^[a-zA-Z0-9]*$/;
       if (!tagRegex.test(value)) {
-        return; // Reject invalid characters
+        return;
       }
-      // Enforce max length of 5 characters
       if (value.length > 5) {
         return;
       }
@@ -110,8 +95,7 @@ const FamilyManagement = () => {
   const handleCreateFamily = async (e) => {
     e.preventDefault();
 
-    // Validate family name and tag
-    const nameRegex = /^[a-zA-Z0-9][a-zA-Z0-9 ]*$/; // Must not start with whitespace
+    const nameRegex = /^[a-zA-Z0-9][a-zA-Z0-9 ]*$/;
     const tagRegex = /^[a-zA-Z0-9]+$/;
 
     if (!newFamilyData.name || !newFamilyData.tag) {
@@ -174,6 +158,7 @@ const FamilyManagement = () => {
           "family",
           JSON.stringify(response.data.familyData)
         );
+        sessionStorage.setItem("familyRole", "parent");
         window.dispatchEvent(new Event("storage"));
       }
     } catch (error) {
@@ -217,8 +202,6 @@ const FamilyManagement = () => {
         });
         setSearchResults([]);
       } else {
-        console.log(response);
-        // Ensure searchResults is always an array
         const familyData = response.data.familyData;
         setSearchResults(
           Array.isArray(familyData)
@@ -263,78 +246,6 @@ const FamilyManagement = () => {
       }
     } catch (error) {
       console.error("Join family error:", error);
-      setAlert({
-        open: true,
-        message: "An error occurred. Please try again.",
-        severity: "error",
-      });
-    }
-  };
-
-  const handleOpenInviteDialog = (family) => {
-    setSelectedFamily(family);
-
-    // Check if current user is the admin of this family
-    const currentUserId = JSON.parse(sessionStorage.getItem("user"))?.userId;
-    const isUserAdmin = family.adminId === currentUserId;
-
-    setIsAdmin(isUserAdmin);
-
-    if (!isUserAdmin) {
-      setAlert({
-        open: true,
-        message: "Only family administrators can send invitations",
-        severity: "warning",
-      });
-      return;
-    }
-
-    setOpenInviteDialog(true);
-  };
-
-  const handleCloseInviteDialog = () => {
-    setOpenInviteDialog(false);
-    setInviteEmail("");
-  };
-
-  const handleSendInvite = async () => {
-    if (!inviteEmail || !selectedFamily) return;
-
-    // Double-check admin status before sending invitation
-    const currentUserId = JSON.parse(sessionStorage.getItem("user"))?.userId;
-    if (selectedFamily.adminId !== currentUserId) {
-      setAlert({
-        open: true,
-        message: "Only family administrators can send invitations",
-        severity: "error",
-      });
-      handleCloseInviteDialog();
-      return;
-    }
-
-    try {
-      const response = await inviteToFamily({
-        familyId: selectedFamily.id,
-        email: inviteEmail,
-        invitedBy: currentUserId,
-      });
-
-      if (response.status === 200) {
-        setAlert({
-          open: true,
-          message: "Invitation sent successfully!",
-          severity: "success",
-        });
-        handleCloseInviteDialog();
-      } else {
-        setAlert({
-          open: true,
-          message: response.data?.message || "Failed to send invitation",
-          severity: "error",
-        });
-      }
-    } catch (error) {
-      console.error("Invite to family error:", error);
       setAlert({
         open: true,
         message: "An error occurred. Please try again.",
@@ -522,7 +433,6 @@ const FamilyManagement = () => {
                 </Grid>
 
                 <Grid item xs={12}>
-                  {console.log(searchResults)}
                   {searchResults && searchResults.length > 0 ? (
                     <List sx={{ width: "100%", bgcolor: "background.paper" }}>
                       {searchResults.map((family) => (
@@ -604,48 +514,6 @@ const FamilyManagement = () => {
           )}
         </Paper>
       </motion.div>
-
-      {/* Invite Dialog */}
-      <Dialog open={openInviteDialog} onClose={handleCloseInviteDialog}>
-        <DialogTitle>
-          {isAdmin
-            ? `Invite to ${selectedFamily?.name}`
-            : "Permission Required"}
-        </DialogTitle>
-        <DialogContent>
-          {isAdmin ? (
-            <>
-              <DialogContentText>
-                Enter the email address of the person you want to invite to join
-                this family.
-              </DialogContentText>
-              <TextField
-                autoFocus
-                margin="dense"
-                label="Email Address"
-                type="email"
-                fullWidth
-                variant="outlined"
-                value={inviteEmail}
-                onChange={(e) => setInviteEmail(e.target.value)}
-              />
-            </>
-          ) : (
-            <DialogContentText>
-              Only the family administrator can send invitations to join this
-              family.
-            </DialogContentText>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseInviteDialog}>Cancel</Button>
-          {isAdmin && (
-            <Button onClick={handleSendInvite} variant="contained">
-              Send Invite
-            </Button>
-          )}
-        </DialogActions>
-      </Dialog>
 
       {/* Alert Snackbar */}
       <Snackbar

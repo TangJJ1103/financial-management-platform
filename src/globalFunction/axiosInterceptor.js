@@ -22,18 +22,17 @@ axiosInstance.interceptors.response.use(
       error: true,
     };
 
-    // Handle network errors
-    // if (error.message === "Network Error") {
-    //   errorResponse.message =
-    //     "Network error. Please check your internet connection.";
+    if (error.message === "Network Error") {
+      errorResponse.message =
+        "Network error. Please check your internet connection.";
 
-    //   // Only redirect if we're not already on the NoInternet page
-    //   if (window.location.pathname !== "/noInternet") {
-    //     window.location.href = "/noInternet";
-    //   }
+      // Only redirect if we're not already on the NoInternet page
+      if (window.location.pathname !== "/noInternet") {
+        window.location.href = "/noInternet";
+      }
 
-    //   return Promise.resolve(errorResponse);
-    // }
+      return Promise.resolve(errorResponse);
+    }
 
     // Handle HTTP errors with response
     if (error.response) {

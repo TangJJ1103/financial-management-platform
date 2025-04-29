@@ -88,7 +88,6 @@ const NoInternetPage = () => {
         setConnectionRestored(false);
       }
     } catch (error) {
-      console.log("Network check failed:", error);
       setIsOffline(true);
       setConnectionRestored(false);
     } finally {

@@ -101,7 +101,6 @@ const AccountManagement = () => {
         }
 
         const response = await getUserById();
-        console.log(response);
         if (!response.error) {
           setUser(response.data.userData);
 

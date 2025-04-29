@@ -706,8 +706,6 @@ const FamilyGoals = () => {
               (contributor) => contributor.userId === userId
             )
         );
-        console.log(activeGoals);
-        console.log(completedGoals);
 
         setGoals(activeGoals);
         setAchievedGoals(completedGoals);
@@ -984,18 +982,20 @@ const FamilyGoals = () => {
             Family Goals
           </Typography>
 
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={handleAddGoal}
-            sx={{
-              borderRadius: "8px",
-              textTransform: "none",
-              py: 1,
-            }}
-          >
-            Add Goal
-          </Button>
+          {familyRole == "parent" && (
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={handleAddGoal}
+              sx={{
+                borderRadius: "8px",
+                textTransform: "none",
+                py: 1,
+              }}
+            >
+              Add Goal
+            </Button>
+          )}
         </Box>
 
         {error && (

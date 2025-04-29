@@ -39,7 +39,6 @@ export const getFamilyExpenses = async () => {
 
   const url = `${getApiEndpoint("getFamilyExpenses")}${familyId}`;
   const response = await axiosInstance.get(url);
-  console.log(response);
   return response;
 };
 

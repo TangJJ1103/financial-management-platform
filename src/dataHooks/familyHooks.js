@@ -11,8 +11,6 @@ export const createFamily = async (familyData) => {
 // Search for families by name or tag
 export const searchFamilies = async (nameAndTag) => {
   const url = getApiEndpoint("searchFamilies");
-  console.log(sessionStorage.getItem("authToken"));
-  console.log(nameAndTag);
   const response = await axiosInstance.post(url, nameAndTag);
   return response;
 };

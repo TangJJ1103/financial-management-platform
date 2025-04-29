@@ -13,7 +13,6 @@ export const getUserBudget = async () => {
   const url = `${getApiEndpoint("getUserBudgets")}${userId}`;
 
   const response = await axiosInstance.get(url);
-  console.log(response);
   return response;
 };
 

@@ -255,7 +255,6 @@ const HomePage = () => {
 
       // Process family members data
       if (!familyMembersResponse.error) {
-        console.log(familyMembersResponse);
         const members = familyMembersResponse.data.members || [];
         setFamilyMembers(members);
       }
@@ -910,7 +909,6 @@ const HomePage = () => {
                         p: 2,
                       }}
                     >
-                      {console.log(familyMembers)}
                       {familyMembers.length > 0 ? (
                         familyMembers.map((member) => {
                           // Check if this is the current user
@@ -954,7 +952,6 @@ const HomePage = () => {
                                 },
                               }}
                             >
-                              {console.log(member)}
                               <Avatar
                                 sx={{
                                   width: 56,
