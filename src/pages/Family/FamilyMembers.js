@@ -374,6 +374,11 @@ const FamilyMembers = () => {
       // Clear family data from session storage
       sessionStorage.removeItem("family");
       sessionStorage.removeItem("familyRole");
+      window.dispatchEvent(
+        new CustomEvent("familyStatusChanged", {
+          detail: { hasFamily: false },
+        })
+      );
 
       // Show success message
       setSnackbar({
