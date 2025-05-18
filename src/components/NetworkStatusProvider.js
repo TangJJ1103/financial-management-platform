@@ -48,7 +48,6 @@ export const NetworkStatusProvider = ({ children }) => {
 
   useEffect(() => {
     const checkConnection = async () => {
-      // Don't check if we're already on the NoInternet page
       if (window.location.pathname === "/noInternet") return;
 
       if (!navigator.onLine) return;

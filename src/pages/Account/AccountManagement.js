@@ -13,6 +13,7 @@ import {
   Snackbar,
   Tab,
   Tabs,
+  CircularProgress,
   useTheme,
   useMediaQuery,
   InputAdornment,
@@ -72,6 +73,7 @@ const AccountManagement = () => {
   const [tabValue, setTabValue] = useState(0);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [imageFile, setImageFile] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -156,6 +158,7 @@ const AccountManagement = () => {
   };
 
   const handleProfileUpdate = async () => {
+    setIsLoading(true);
     try {
       let imageUrl = formData.imageUrl;
 
@@ -205,6 +208,8 @@ const AccountManagement = () => {
         message: "Failed to update profile",
         severity: "error",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -364,15 +369,19 @@ const AccountManagement = () => {
                   />
                 </Grid>
                 <Grid item xs={12}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    startIcon={<SaveIcon />}
-                    onClick={handleProfileUpdate}
-                    sx={{ mt: 2 }}
-                  >
-                    Save Changes
-                  </Button>
+                  {isLoading ? (
+                    <CircularProgress size={24} />
+                  ) : (
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      startIcon={<SaveIcon />}
+                      onClick={handleProfileUpdate}
+                      sx={{ mt: 2 }}
+                    >
+                      Save Changes
+                    </Button>
+                  )}
                 </Grid>
               </Grid>
             </Grid>
